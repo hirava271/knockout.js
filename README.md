@@ -1,4 +1,4 @@
-# TriviaGame-CPSC-473-Assignment4/
+# knockout.js-Assignment6/
 
 1) Download/clone the project from this repository.
 
