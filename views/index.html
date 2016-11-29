@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<title>Assignment-5</title>
+	<link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
+	<link rel="stylesheet" type="text/css" href="stylesheets/style.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	
+</head>
+<body>
+	<header>
+		<nav>
+			<div>
+				<img src="images/logo.png" style="height:100px; width: 200px ">
+			</div>
+		</nav>
+	</header>
+
+	<main>
+		<div style="height:5px; width:100%"></div>
+		<div id="scoreDivId" data-bind="visible:scoreDivId"> 
+			<div id="scoreDivBtnId" style="float:right">
+			<div id="scoreBtnId" data-bind="visible:scoreBtnId" name="score" class="ui label">Current Score:
+				<textarea readonly="true" id="rightAns" class="ui label" data-bind="value:right"></textarea>
+				<textarea readonly="true" id="wrongAns" class="ui label" data-bind="value:wrong"></textarea></div> 
+			</div>
+			<div id="addQueDivBtnId" style="float:right"><input id="addQueBtnId" data-bind="visible:addQueBtnId,click:addQueBtnIdEvent" name="addButton" style="display:none" type="button" value="Add a question?" class="ui blue button"></div>
+		</div>
+		<div style="height:5px; width:100%"></div>
+		<div class="threeColumn" style="margin-left: 30%;" id="playBtnDivId" data-bind="visible:playBtnDivId">
+			<div id="imgId" style="float:right;"><img src="images/trivia.gif"></div>
+			<div class="field">
+				<input type="text" name="userName" id="userNameId" data-bind="visible:userNameId" placeholder="Enter your username">
+				<input class="ui blue button" id="playBtnId" data-bind="click:startGame" name="playButton" type="button" value="PLAY"><br>
+			</div>
+		</div>
+		<div id="displayQueId" data-bind="visible:displayQueId">
+			<input type="hidden" id="askedQueId">
+			<input type="hidden" id="askedQueAns">
+			<input type="hidden" id="currentUserId" data-bind="value:currentUserId"/>
+			<div id="allQueId" class="btn" data-bind="visible:allQueId">
+				<div class="ui label" style="margin-top:60px">Question </div>
+				<textarea readonly="true" class="ui label" style="height:50px; width:300px;" id="queId"></textarea><br> 
+				<div class="ui label">Answer </div>
+				<textarea class="ui label" style="height:50px; width:300px;" id="ansId"></textarea><br> 
+				<input class="ui label" type="button" value="Send" id="sendBtnId">
+				<input class="ui label" type="button" value="Next" id="nextBtnId" data-bind="value:playGame"><br>
+			</div>
+		</div>
+		<div id="addQueDivId" data-bind="visible:addQueDivId" style="display : none" data-bind="with: ">
+			<div class="ui label">Type a question</div><textarea class="ui label" id="questionId" data-bind="value:question"></textarea><br>
+			<div class="ui label">Answer</div><textarea class="ui label" id="answerId" data-bind="value:answer"></textarea><br>
+			<input class="ui blue button" id="submitBtnId" data-bind="click:postQuestion" type="button" value="Submit"><br>
+		</div>
+	</div>
+	<div id="onlineUser" style="float:right" data-bind="visible:onlineUser"></div>
+</main>
+    <script src="https://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js"></script>
+    <script src = "javascripts/app.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+<footer>
+</footer>
+</body>
+</html>
