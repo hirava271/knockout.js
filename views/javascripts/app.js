@@ -1,164 +1,167 @@
-/* jshint browser: true, jquery: true, camelcase: true, indent: 2, undef: true, quotmark: single, maxlen: 80, trailing: true, curly: true, eqeqeq: true, forin: true, immed: true, latedef: true, newcap: true, nonew: true, unused: true, strict: true */
+var socket = io(),
+    userName;
 
 
-/*var getScore = function(){
+function triviaViewModel() {
 
-    'use strict';
+    var self = this;
 
-    $('#scoreDisplayId').show();
-    var url = 'score';
-    $.ajax({
-        method: 'GET',
-        url: 'http://localhost:3000/' + url,
-        crossDomain: true,
-        dataType: 'json'
-    }).done(function(msg) {
-        if (msg.answer === false) {
-            msg.answer = 'false';
-        }
-        console.log(msg);
-        $('#rightId').val(msg.right);
-        $('#wrongId').val(msg.wrong);
-    });
-};
-*/
-var postQuestion = function(){
+    self.right = ko.obeservable();
+    self.wrong = ko.observable();
+    self.question = ko.observable();
+    self.answer = ko.observable();
+    self.displayQueId = ko.observable();
+    self.addQueBtnId = ko.observable();
+    self.addQueDivId = ko.observable();
+    self.userNameId = ko.observable();
+    self.allQueId = ko.observable();
+    self.scoreBtnId = ko.observable();
+    self.playBtnDivId = ko.observable();
+    self.onlineUser = ko.observable();
 
-    'use strict';
+    self.getScore = function() {
 
-    var url = 'question';
-    var question = $('#questionId').val();
-    var answer = $('#answerId').val();
-    var data = {
-        'question': question,
-        'answer': answer
+        $("#scoreDisplayId").show();
+        var url = "score";
+        $.ajax({
+            method: "GET",
+            url: "http://localhost:3000/" + url,
+            crossDomain: true,
+            dataType: "json"
+        }).done(function(msg) {
+            if (msg.answer === false) {
+                msg.answer = "false";
+            }
+            self.right(msg.right);
+            self.worng(msg.wrong);
+        });
+    }
+
+    self.postQuestion = function() {
+
+        var url = "question";
+        var data = {
+            "question": self.question,
+            "answer": self.answer
+        };
+        var dataJSON = JSON.stringify(data);
+        console.log(dataJSON);
+        $.ajax({
+            method: "POST",
+            url: "http://localhost:3000/" + url,
+            crossDomain: true,
+            dataType: "json",
+            data: data
+        }).done(function(msg) {
+            if (msg.answer === false) {
+                msg.answer = "false";
+            }
+            self.displayQueId(true);
+            self.addQueBtnId(true);
+            self.addQueDivId(false);
+            self.userNameId(false);
+            self.question(null);
+            self.answer(null);
+        });
     };
-    var dataJSON = JSON.stringify(data);
-    console.log(dataJSON);
-    $.ajax({
-        method: 'POST',
-        url: 'http://localhost:3000/' + url,
-        crossDomain: true,
-        dataType: 'json',
-        data: data
-    }).done(function(msg) {
-        if (msg.answer === false) {
-            msg.answer = 'false';
-        }
-        $('#displayQueId').show();
-        $('#addQueBtnId').show();
-        $('#addQueDivId').hide();
-        $('#userNameId').hide();
-        alert(msg.message);
-        $('#questionId').val('');
-        $('#ansId').val('');
-    });
-};
 
-var playGame = function(){
+    self.playGame = function() {
 
-    'use strict';
+        var url = "question";
+        $.ajax({
+            method: "GET",
+            url: "http://localhost:3000/" + url,
+            crossDomain: true,
+            dataType: "json",
+        }).done(function(msg) {
+            if (msg.answer === false) {
+                msg.answer = "false";
+            }
 
-    var url = 'question';
-    $.ajax({
-        method: 'GET',
-        url: 'http://localhost:3000/' + url,
-        crossDomain: true,
-        dataType: 'json',
-    }).done(function(msg) {
-        if (msg.answer === false) {
-            msg.answer = 'false';
-        }
-        $('#allQueId').show();
-        $('#scoreBtnId').show();
-        $('#addQueBtnId').show();
-        $('#addQueDivId').hide();
-        $('#playBtnDivId').hide();
-        $('#displayQueId').show();
-        $('#onlineUser').show();
-    });
-};
+            self.allQueId(true);
+            self.scoreBtnId(true);
+            self.addQueBtnId(true);
+            self.addQueDivId(false);
+            self.playBtnDivId(false);
+            self.displayQueId(true);
+            self.onlineUser(true);
+        });
+    };
+    
+    self.addQueBtnIdEvent=function(){
+        self.addQueDivId(true);
+        self.displayQueId(false);
+        self.addQueBtnId(false);
+        self.playBtnId(false);
+        self.userNameId(false);
+        seld.answer(null);
+    }
+    
 
-var main = function(){
-    'use strict';
+    self.main = function() {
 
-    var socket = io(),
-        userName;
+        self.scoreDivId = false;
+        self.displayQueId = false;
+        self.onlineUser = false;
 
-    console.log('At client side');
-    $('#scoreDivId').hide();
-    $('#displayQueId').hide();
-    $('#onlineUser').hide();
 
-    $('#playBtnId').on('click', function(){
-        console.log('Playing game...');
-        $('#scoreDivId').show();
-        userName = $('#userNameId').val();
-        $('#currentUserId').val(userName);
-        console.log('Current user: '+userName);
-        playGame();
-        socket.emit('play', userName);
+    }
+
+    self.startGame = function() {
+        console.log("Playing game...");
+        self.scoreDivId = true;
+        self.userName = self.userNameId;
+        self.currentUserId = self.userName;
+
+        console.log("Current user: " + self.userName);
+        self.playGame();
+        socket.emit('play', self.userName);
+    }
+
+
+    socket.on('newQue', function(question) {
+        self.queId = question.question;
+        self.askedQueId = question._id;
+        self.askedQueAns = question.answer;
+        $('#' + userName).css("color", "black");
     });
 
-    socket.on('play', function(name){
-        var item;
-        $('#userName').text('Hi...!! '+name);
-        //for(var i=0; i<name.length; i++){
-       // $('#onlineUser').append(userName);
-        item = $('<textarea readonly="true" class="ui label" id="'+name+'">').text(name);
-        $('#onlineUser').append(item);
-    });
-
-    socket.on('newQue', function(question){
-        $('#queId').val(question.question);
-        $('#askedQueId').val(question._id);
-        $('#askedQueAns').val(question.answer);
-        $('#'+userName).css('color','black');
-    });
-
-    $('#sendBtnId').on('click', function(){
+    self.sendBtnEvent = function() {
         console.log($('#ansId').val());
-        console.log('Question ::::: ',$('#askedQueId').val());
-        socket.emit('score', { questionId : $('#askedQueId').val(),
-                                 givenAns : $('#ansId').val(), 
-                                    actualAns : $('#askedQueAns').val()});
-    });
+        console.log("Question ::::: ", $('#askedQueId').val());
+        socket.emit('score', {
+            questionId: $('#askedQueId').val(),
+            givenAns: $('#ansId').val(),
+            actualAns: $('#askedQueAns').val()
+        });
+    }
 
-    $('#nextBtnId').on('click', function(){
-        $('#ansId').val('');
-        playGame();
-    });
+}
+ko.applyBindings(new triviaViewModel());
 
-    socket.on('score', function(data){
+
+socket.on('play', function(name) {
+        var item;
+        //for(var i=0; i<name.length; i++){
+        // $('#onlineUser').append(userName);
+        item = $('<textarea readonly="true" class="ui label" id="' + name + '">').text(name);
+        $('#onlineUser').append(item);
+});
+
+
+    socket.on('score', function(data) {
         $('#rightAns').val(data.right);
         $('#wrongAns').val(data.wrong);
         console.log($('#currentUserId').val());
-        if(data.flag === 1){
-            if($('#currentUserId').val() === $('#'+userName+'').text()) {
-                $('#'+userName+'').css('color','#33D166');
+        if (data.flag == 1) {
+            if ($('#currentUserId').val() == $('#' + userName + '').text()) {
+                $('#' + userName + '').css("color", "#33D166");
             }
         }
-        if(data.flag === 0){
-            if($('#currentUserId').val() === $('#'+userName+'').text()) {
-                $('#'+userName+'').css('color','#F1492A');
+        if (data.flag == 0) {
+            if ($('#currentUserId').val() == $('#' + userName + '').text()) {
+                $('#' + userName + '').css("color", "#F1492A");
+            }
         }
-        }
     });
-    
-
-    $('#addQueBtnId').on('click', function() {
-        $('#addQueDivId').show();
-        $('#displayQueId').hide();
-        $('#addQueBtnId').hide();
-        $('#playBtnId').hide();
-        $('#userNameId').hide();
-        $('#answerId').val('');
-    });
-
-    $('#submitBtnId').on('click' ,function(){
-        postQuestion();
-
-    });
-};
-
 $(document).ready(main);
